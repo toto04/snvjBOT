@@ -1,7 +1,9 @@
 const fs = require('fs');
 const https = require('https');
-const { parse } = require('node-html-parser');
-const youtubedl = require('youtube-dl');  // https://www.npmjs.com/package/youtube-dl
+const {
+  parse
+} = require('node-html-parser');
+const youtubedl = require('youtube-dl'); // https://www.npmjs.com/package/youtube-dl
 const ytdl = require('ytdl-core');
 const ffmpeg = require('fluent-ffmpeg');
 const EventEmitter = require('events');
@@ -11,8 +13,8 @@ const EventEmitter = require('events');
 
 var cacheDir = 'audio_cache';
 
-const sizesPath = `${cacheDir}/sizes.json`
-const bitrate = 80
+const sizesPath = `${cacheDir}/sizes.json` // TODO: USE PATH.JS GOD FUCK IT
+const bitrate = 72
 
 class Song extends EventEmitter {
   static check(id) {
@@ -39,7 +41,7 @@ class Song extends EventEmitter {
         res.on('data', (chunk) => {
           rawData += chunk;
         })
-        res.on('end', ()=> {
+        res.on('end', () => {
           //once the page is loaded search for the first result
           try {
             var doc = parse(rawData);
@@ -57,21 +59,26 @@ class Song extends EventEmitter {
   }
 
   constructor(title) {
-    super(); //don't really need this lol
+    super();
 
     this.ready = false;
     this.absolutePath = '';
     this.title = 'Pending... (${title})'
-    this.on('ready', ()=>{this.ready=true}) //set ready to true when ready event is emitted
+    this.on('ready', () => {
+      this.ready = true
+    }) //set ready to true when ready event is emitted
 
-    var vidID = title.substr(title.length - 11, title.length); //get id from url
-
-    Song.search(title).then((newID)=>{
-      this.id = newID;
-      this.download();
-    }, e => {
-      this.emit('error', e)
-    })
+    var match = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/.exec(title)
+    if (match) {
+      this.id = match[5]
+    } else {
+      Song.search(title).then((newID) => {
+        this.id = newID;
+        // this.download();
+      }, e => {
+        this.emit('error', e)
+      })
+    }
   }
 
   download() {
@@ -102,46 +109,50 @@ class Song extends EventEmitter {
 
       var sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));
       if (sizes[filename] != fileSize) {
-        var format = ytdl.chooseFormat(info.formats, {quality: 'highest'})
+        var format = ytdl.chooseFormat(info.formats, {
+          quality: 'highest'
+        })
         var ext = '.' + format.container;
 
         var wStream = fs.createWriteStream(cacheDir + '/' + filename + ext);
-        ytdl.downloadFromInfo(info, {format: format})
-        .on('progress', (len, dow, tot) => {
-          var percent = (dow / tot * 100).toFixed(2);
-          process.stdout.cursorTo(0);
-          process.stdout.clearLine(1);
-          process.stdout.write(percent + '%');
-        })
-        .pipe(wStream)
+        ytdl.downloadFromInfo(info, {
+            format: format
+          })
+          .on('progress', (len, dow, tot) => {
+            var percent = (dow / tot * 100).toFixed(2);
+            process.stdout.cursorTo(0);
+            process.stdout.clearLine(1);
+            process.stdout.write(percent + '%');
+          })
+          .pipe(wStream)
 
         wStream.on('close', () => {
           console.log("TEATEASF" + this.absolutePath);
           console.log('\nFinished downloading file ' + "\x1b[31m" + filename + "\x1b[0m");
           ffmpeg(__dirname + '/' + cacheDir + '/' + filename + ext)
-          .audioBitrate(bitrate)
-          .toFormat('mp3')
-          .on('end', ()=>{
-            console.log('\nFinished converting!');
-            this.emit('ready')
+            .audioBitrate(bitrate)
+            .toFormat('mp3')
+            .on('end', () => {
+              console.log('\nFinished converting!');
+              this.emit('ready')
 
-            fileSize = fs.statSync(path).size
-            sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));
-            sizes[filename] = fileSize
+              fileSize = fs.statSync(path).size
+              sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));
+              sizes[filename] = fileSize
 
-            fs.writeFile(sizesPath, JSON.stringify(sizes, null, 2), ()=>{
-              console.log("JSON updated!");
+              fs.writeFile(sizesPath, JSON.stringify(sizes, null, 2), () => {
+                console.log("JSON updated!");
+              })
+
+              fs.unlink(cacheDir + '/' + filename + ext, (err) => { //Removes the temporary video file
+                //if (err) throw err;
+                console.log("File eliminato con successo!");
+              })
             })
-
-            fs.unlink(cacheDir + '/' + filename + ext, (err)=>{ //Removes the temporary video file
-              if (err) throw err;
-              console.log("File eliminato con successo!");
+            .on('error', (e) => {
+              console.log(e);
             })
-          })
-          .on('error', (e)=>{
-            console.log(e);
-          })
-          .saveToFile(this.absolutePath)
+            .saveToFile(this.absolutePath)
         })
       } else {
         console.log("File already downloaded and converted!");
