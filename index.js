@@ -1,19 +1,24 @@
 const discord = require('discord.js');
-// const ffmpeg = require('ffmpeg');
 const Player = require('./player.js');
 const Song = require('./ytSong.js');
+const fs = require('fs')
 
 const client = new discord.Client();
 
 var summonChar = "!"
 var player;
-var queue = [];
-
-var test = 'banana.m4a'
 
 var player;
 
 client.on("ready", () => {
+  fs.exists('audio_cache', e => {
+    if (!e) {
+      console.log('creating audio cache')
+      fs.mkdirSync('audio_cache')
+      fs.writeFileSync('audio_cache/sizes.json', '[]')
+    }
+  })
+  
   console.log("Snavajab bot up to work!");
   console.log(client.user.username);
 
