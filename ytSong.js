@@ -115,10 +115,12 @@ class Song extends EventEmitter {
         var wStream = fs.createWriteStream(cacheDir + '/' + filename + ext);
         ytdl.downloadFromInfo(info, { format })
           .on('progress', (len, dow, tot) => {
-            var percent = (dow / tot * 100).toFixed(2);
-            process.stdout.cursorTo(0);
-            process.stdout.clearLine(1);
-            process.stdout.write(percent + '%');
+            if (process.stdout.isTTY) {
+              var percent = (dow / tot * 100).toFixed(2);
+              process.stdout.cursorTo(0);
+              process.stdout.clearLine(1);
+              process.stdout.write(percent + '%');
+            }
           })
           .pipe(wStream)
 
