@@ -119,7 +119,9 @@ client.on("message", (message) => {
   }
 })
 
-
-
 //QUESTO È IL MIO TOKEN E DI NESSUN ALTRO. No sul serio, questo token serve al login con il bot
 client.login('NTE3NDIyNzU2NDIyMjIxODM0.DuCrtA.XWybrpzNG0mqoj41vOFW-52F9jw');
+
+require('http').createServer((req, res) => {
+  res.end('not implemented')
+}).listen(process.env.PORT || 5000)
