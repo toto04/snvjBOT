@@ -1,6 +1,7 @@
 const discord = require('discord.js');
 const Player = require('./player.js');
 const Song = require('./ytSong.js');
+const http = require('http')
 const fs = require('fs')
 
 const client = new discord.Client();
@@ -18,7 +19,7 @@ client.on("ready", () => {
       fs.writeFileSync('audio_cache/sizes.json', '[]')
     }
   })
-  
+
   console.log("Snavajab bot up to work!");
   console.log(client.user.username);
 
@@ -26,7 +27,7 @@ client.on("ready", () => {
 
   // console.log(arr[5]);
   client.user.setPresence({
-    game: {name: "music bot", type: 0, url: "https://tommasomorganti.altervista.org"},
+    game: { name: "music bot", type: 0 },
     status: 'online',
     afk: true
   });
@@ -34,14 +35,14 @@ client.on("ready", () => {
   player.on('stateChange', (state) => {
     if (state == 1) {
       player.defaultChannel.send('Waiting for a song to download')
-      .then((message) => {
-        message.delete(2000)
-      });
-    } else if (state == 2){
+        .then((message) => {
+          message.delete(2000)
+        });
+    } else if (state == 2) {
       player.defaultChannel.send('Now playing! ' + player.queue[0].title)
-      .then((message) => {
-        message.delete(2000)
-      });
+        .then((message) => {
+          message.delete(2000)
+        });
     }
   })
 })
@@ -70,10 +71,10 @@ client.on("message", (message) => {
     // Only try to join the sender's voice channel if they are in one themselves
     if (message.member.voiceChannel) {
       message.member.voiceChannel.join()
-      .then((connection) => { // Connection is an instance of VoiceConnection
-        message.reply('I have successfully connected to the channel!');
-      })
-      .catch(console.log);
+        .then((connection) => { // Connection is an instance of VoiceConnection
+          message.reply('I have successfully connected to the channel!');
+        })
+        .catch(console.log);
     } else {
       message.reply('Entra in un canale vocale prima!');
     }
@@ -122,6 +123,13 @@ client.on("message", (message) => {
 //QUESTO È IL MIO TOKEN E DI NESSUN ALTRO. No sul serio, questo token serve al login con il bot
 client.login('NTE3NDIyNzU2NDIyMjIxODM0.DuCrtA.XWybrpzNG0mqoj41vOFW-52F9jw');
 
-require('http').createServer((req, res) => {
+const port = process.env.PORT || 5000
+
+http.createServer((req, res) => {
+  console.log('lmao')
   res.end('not implemented')
-}).listen(process.env.PORT || 5000)
+}).listen(port)
+
+setInterval(() => {
+  http.get(`http://127.0.0.1:${port}`)
+}, 1800000)
