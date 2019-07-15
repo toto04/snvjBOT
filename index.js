@@ -131,5 +131,5 @@ http.createServer((req, res) => {
 }).listen(port)
 
 setInterval(() => {
-  http.get(`http://127.0.0.1:${port}`)
-}, 1800000)
+  http.get(`https://snvjbot.herokuapp.com`)
+}, 300000)
