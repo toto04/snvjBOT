@@ -1,9 +1,9 @@
-const fs = require('fs');
-const https = require('https');
-const { parse } = require('node-html-parser');
-const ytdl = require('ytdl-core');
-const ffmpeg = require('fluent-ffmpeg');
-const EventEmitter = require('events');
+import fs from 'fs'
+import https from 'https'
+import { parse } from 'node-html-parser'
+import ytdl, { videoFormat } from 'ytdl-core'
+import ffmpeg from 'fluent-ffmpeg'
+import EventEmitter from 'events'
 
 // var testurl = 'https://www.youtube.com/watch?v=kJQP7kiw5Fk'
 // const flg = ['--format=249'] //flags for the command, Il formato 249 è l'audio a minor bitrate
@@ -14,8 +14,13 @@ const sizesPath = `${cacheDir}/sizes.json` // TODO: USE PATH.JS GOD FUCK IT
 const bitrate = 72
 
 class Song extends EventEmitter {
-  static check(id) {
-    var check = new Promise((resolve, reject) => {
+  ready: boolean;
+  absolutePath: string;
+  title: string;
+  id?: string;
+  
+  static check(id: string): Promise<boolean> {
+    var check = new Promise<boolean>((resolve, reject) => {
       //checks if the thumbnail exists
       https.get('https://img.youtube.com/vi/' + id + '/0.jpg', (res) => {
         if (res.statusCode == 200) {
@@ -28,8 +33,8 @@ class Song extends EventEmitter {
     return check;
   }
 
-  static search(terms) {
-    var search = new Promise((resolve, reject) => {
+  static search(terms: string): Promise<string> {
+    var search = new Promise<string>((resolve, reject) => {
       var searchURL = 'https://www.youtube.com/results?search_query=' + terms;
       https.get(searchURL, (res) => {
         // get the resulting search page
@@ -41,8 +46,8 @@ class Song extends EventEmitter {
         res.on('end', () => {
           //once the page is loaded search for the first result
           try {
-            var doc = parse(rawData);
-            var result = doc.querySelectorAll('.yt-uix-tile-link')[0];
+            var doc: any = parse(rawData);
+            var result = doc.querySelector('.yt-uix-tile-link');
             var id = result.rawAttrs.substring(15, 26);
             resolve(id);
           } catch (e) {
@@ -55,7 +60,7 @@ class Song extends EventEmitter {
     return search;
   }
 
-  constructor(title) {
+  constructor(title: string) {
     super();
 
     this.ready = false;
@@ -110,17 +115,18 @@ class Song extends EventEmitter {
         var format = ytdl.chooseFormat(info.formats, {
           quality: 'highest'
         })
-        var ext = '.' + format.container;
+        if (format instanceof Error) return
+        var ext = '.' + format.container
 
         var wStream = fs.createWriteStream(cacheDir + '/' + filename + ext);
         ytdl.downloadFromInfo(info, { format })
           .on('progress', (len, dow, tot) => {
-            if (process.stdout.isTTY) {
-              var percent = (dow / tot * 100).toFixed(2);
-              process.stdout.cursorTo(0);
-              process.stdout.clearLine(1);
-              process.stdout.write(percent + '%');
-            }
+            // if (process.stdout.isTTY) {
+            //   var percent = (dow / tot * 100).toFixed(2);
+            //   process.stdout.cursorTo(0);
+            //   process.stdout.clearLine(1);
+            //   process.stdout.write(percent + '%');
+            // }
           })
           .pipe(wStream)
 
@@ -147,7 +153,7 @@ class Song extends EventEmitter {
                 console.log("File eliminato con successo!");
               })
             })
-            .on('error', (e) => {
+            .on('error', (e: any) => {
               console.log(e);
             })
             .saveToFile(this.absolutePath)
@@ -160,4 +166,4 @@ class Song extends EventEmitter {
   }
 }
 
-module.exports = Song;
+export default Song
