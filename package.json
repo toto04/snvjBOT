@@ -10,11 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^12.6.8",
     "discord.js": "^11.5.1",
     "ffmpeg": "0.0.4",
     "fluent-ffmpeg": "^2.1.2",
     "node-html-parser": "^1.1.16",
     "node-opus": "^0.3.2",
+    "typescript": "^3.5.3",
     "ytdl-core": "^0.29.3"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.10"
   }
 }

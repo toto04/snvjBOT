@@ -1,4 +1,7 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events'
+import discord from 'discord.js'
+import Song from './ytSong'
+import { deflateSync } from 'zlib';
 
 const IDLE = 0;
 const PENDING = 1;
@@ -6,18 +9,23 @@ const PLAYING = 2;
 const PAUSE = 3;
 
 class Player extends EventEmitter {
-  constructor(client) {
+  defaultChannel?: discord.TextChannel;
+  client: discord.Client;
+  state?: number;
+  queue: Song[];
+  dispatcher?: discord.StreamDispatcher;
+
+  constructor(client: discord.Client) {
     super();
 
-    for (var i = 0; i < client.channels.array().length; i++) {
-      if (client.channels.array()[i].id == '348145753514049536') {
-        this.defaultChannel = client.channels.array()[i];
+    for (let channel of client.channels.array()) {
+      if (channel.id == '348145753514049536' && channel instanceof discord.TextChannel) {
+        this.defaultChannel = channel
         break;
       }
     }
 
     this.client = client;
-    this.state = false;
     this.on('stateChange', (newState) => {
       // Stati possibili:
       // idle = 0;
@@ -30,7 +38,7 @@ class Player extends EventEmitter {
     this.queue = [];
   }
 
-  push(song) {
+  push(song: Song) {
     this.queue.push(song);
     if (this.queue.length == 1) {
       this.start();
@@ -42,7 +50,7 @@ class Player extends EventEmitter {
       console.log("Nessun brano in riproduzione");
       return;
     }
-    if (this.status == PAUSE) {
+    if (this.state == PAUSE) {
       console.log('Già in pausa');
       return;
     }
@@ -51,7 +59,7 @@ class Player extends EventEmitter {
   }
 
   resume() {
-    if (this.state != PAUSE) {
+    if (this.state != PAUSE && this.defaultChannel) {
       this.defaultChannel.send("Nessuna canzone in coda");
       return;
     }
@@ -70,6 +78,12 @@ class Player extends EventEmitter {
     }
     if (!this.queue[0].ready) {
       this.emit('stateChange', PENDING);
+      if (this.defaultChannel) {
+        this.defaultChannel.send('Waiting for a song to download')
+        .then((m) => {
+          if (m instanceof discord.Message) m.delete(2000)
+        });
+      }
       this.queue[0].on('ready', () => {
         this.start();
       })
@@ -77,12 +91,12 @@ class Player extends EventEmitter {
     }
 
     if (this.client.voiceConnections.array().length == 0) {
-      this.defaultChannel.send(
-        "Nessun canale vocale! Usa il comando\n" +
-        "```Markdown\n" +
-        "!join\n" +
-        "```" +
-        "mentre si è all'interno di un canale per far entrare il bot!"
+      if (this.defaultChannel) this.defaultChannel.send(
+        `No voice channel! Use the command
+        \`\`\`Markdown
+        !summon
+        \`\`\`
+        while in a voice channel to summon the bot!`
       )
       this.emit('stateChange', PAUSE);
       return;
@@ -91,8 +105,14 @@ class Player extends EventEmitter {
     //Finalmente, riproduci il file
     this.emit('stateChange', PLAYING)
     console.log('Now playing ' + this.queue[0].title);
+    if (this.defaultChannel) {
+      this.defaultChannel.send('Now playing! ' + this.queue[0].title)
+      .then((m) => {
+        if (m instanceof discord.Message) m.delete(2000)
+      });
+    }
     this.dispatcher = this.client.voiceConnections.array()[0].playFile(this.queue[0].absolutePath);
-    this.dispatcher.on('end', (reason) => {
+    this.dispatcher.on('end', (reason: string) => {
       if (reason == 'skipped') return;
       console.log("Ended song");
       this.emit('stateChange', IDLE);
@@ -101,14 +121,15 @@ class Player extends EventEmitter {
   }
 
   skip() {
+    if (!this.dispatcher) return
     this.dispatcher.end('skipped')
-    this.dispatcher = undefined;
-    console.log("dispatcher destroyed! Skipping");
-    this.queue.shift();
+    this.dispatcher = undefined
+    console.log("dispatcher destroyed! Skipping")
+    this.queue.shift()
     if (this.queue.length > 0) {
-      this.start();
+      this.start()
     }
   }
 }
 
-module.exports = Player;
+export default Player
