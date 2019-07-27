@@ -1,7 +1,6 @@
 import EventEmitter from 'events'
 import discord from 'discord.js'
 import Song from './ytSong'
-import { deflateSync } from 'zlib';
 
 const IDLE = 0;
 const PENDING = 1;
@@ -19,7 +18,7 @@ class Player extends EventEmitter {
     super();
 
     for (let channel of client.channels.array()) {
-      if (channel.id == '348145753514049536' && channel instanceof discord.TextChannel) {
+      if (channel.id == process.env.DEFAULT_CHANNEL && channel instanceof discord.TextChannel) {
         this.defaultChannel = channel
         break;
       }

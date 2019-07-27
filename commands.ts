@@ -60,7 +60,7 @@ var commands: { [key: string]: command } = {
             q.setColor(`#FF9900`)
                 .setTitle(`Queue`)
             for (let entry of player.queue) {
-                q.addField(entry.title, '')
+                q.addField(entry.title, entry.status)
             }
             message.channel.send(q)
         }
@@ -75,6 +75,7 @@ var commands: { [key: string]: command } = {
             for (let key in commands) {
                 q.addField(key, commands[key].desc)
             }
+            q.setAuthor('view this project on github', 'https://github.com/toto04.png', 'https://github.com/toto04/snvjBOT')
             message.channel.send(q)
         }
     }

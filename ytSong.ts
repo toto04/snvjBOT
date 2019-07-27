@@ -17,8 +17,9 @@ class Song extends EventEmitter {
   ready: boolean;
   absolutePath: string;
   title: string;
+  status: string;
   id?: string;
-  
+
   static check(id: string): Promise<boolean> {
     var check = new Promise<boolean>((resolve, reject) => {
       //checks if the thumbnail exists
@@ -65,7 +66,8 @@ class Song extends EventEmitter {
 
     this.ready = false;
     this.absolutePath = '';
-    this.title = 'Pending... (${title})'
+    this.title = `Pending... (${title})`
+    this.status = 'Retrieving informations'
     this.on('ready', () => {
       this.ready = true
     }) //set ready to true when ready event is emitted
@@ -96,6 +98,7 @@ class Song extends EventEmitter {
       var id = this.id;
       var title = info.player_response.videoDetails.title
       this.title = title;
+      this.status = 'Downloading...'
       title = title.replace(/\|/g, "_");
       title = title.replace(/\//g, "_");
 
@@ -139,6 +142,7 @@ class Song extends EventEmitter {
             .on('end', () => {
               console.log('\nFinished converting!');
               this.emit('ready')
+              this.status = `Length: ${info.length_seconds}`
 
               fileSize = fs.statSync(path).size
               sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));

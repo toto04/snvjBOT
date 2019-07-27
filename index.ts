@@ -1,7 +1,6 @@
 import discord from 'discord.js'
 import commands from './commands'
 import Player from './player'
-import Song from './ytSong.js'
 import http from 'http'
 import fs from 'fs'
 
@@ -51,7 +50,7 @@ client.on("message", (message) => {
 })
 
 //QUESTO È IL MIO TOKEN E DI NESSUN ALTRO. No sul serio, questo token serve al login con il bot
-client.login('NTE3NDIyNzU2NDIyMjIxODM0.DuCrtA.XWybrpzNG0mqoj41vOFW-52F9jw');
+client.login(process.env.TOKEN);
 
 const port = process.env.PORT || 5000
 
