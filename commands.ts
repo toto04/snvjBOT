@@ -20,6 +20,15 @@ var commands: { [key: string]: command } = {
         }
     },
 
+    'momgetoutofmyroomimplayingminecraft': {
+        desc: 'Yeets the bot out of the voice channel',
+        exec(message, player, payload) {
+            if (message.guild.voiceConnection) {
+               message.guild.voiceConnection.disconnect()
+            }
+        }
+    },
+
     'play': {
         desc:
             `Adds a new song to the queue
