@@ -21,11 +21,10 @@ var commands: { [key: string]: command } = {
     },
 
     'momgetoutofmyroomimplayingminecraft': {
-        desc: 'Yeets the bot out of the voice channel',
+        desc: `Yeets the bot out of the voice channel
+        "Mom get out of my room i'm playing minecraft!"`,
         exec(message, player, payload) {
-            if (message.guild.voiceConnection) {
-               message.guild.voiceConnection.disconnect()
-            }
+            if (message.guild.voiceConnection) message.guild.voiceConnection.disconnect()
         }
     },
 
