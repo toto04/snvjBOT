@@ -134,7 +134,6 @@ class Song extends EventEmitter {
           .pipe(wStream)
 
         wStream.on('close', () => {
-          console.log("TEATEASF" + this.absolutePath);
           console.log('\nFinished downloading file ' + "\x1b[31m" + filename + "\x1b[0m");
           ffmpeg(__dirname + '/' + cacheDir + '/' + filename + ext)
             .audioBitrate(bitrate)
@@ -142,7 +141,7 @@ class Song extends EventEmitter {
             .on('end', () => {
               console.log('\nFinished converting!');
               this.emit('ready')
-              this.status = `Length: ${info.length_seconds}`
+              this.status = `Length: ${info.player_response.videoDetails.lengthSeconds}`
 
               fileSize = fs.statSync(path).size
               sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));
