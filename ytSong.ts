@@ -141,7 +141,9 @@ class Song extends EventEmitter {
             .on('end', () => {
               console.log('\nFinished converting!');
               this.emit('ready')
-              this.status = `Length: ${info.player_response.videoDetails.lengthSeconds}`
+              let time = new Date(0)
+              time.setSeconds(info.player_response.videoDetails.lengthSeconds)
+              this.status = `Length: ${time.getUTCHours()}:${time.getUTCMinutes()}:${time.getUTCSeconds()}`
 
               fileSize = fs.statSync(path).size
               sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'));
