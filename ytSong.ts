@@ -20,19 +20,19 @@ class Song extends EventEmitter {
   status: string;
   id?: string;
 
-  static check(id: string): Promise<boolean> {
-    var check = new Promise<boolean>((resolve, reject) => {
-      //checks if the thumbnail exists
-      https.get('https://img.youtube.com/vi/' + id + '/0.jpg', (res) => {
-        if (res.statusCode == 200) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      })
-    });
-    return check;
-  }
+  // static check(id: string): Promise<boolean> {
+  //   var check = new Promise<boolean>((resolve, reject) => {
+  //     //checks if the thumbnail exists
+  //     https.get('https://img.youtube.com/vi/' + id + '/0.jpg', (res) => {
+  //       if (res.statusCode == 200) {
+  //         resolve(true);
+  //       } else {
+  //         resolve(false);
+  //       }
+  //     })
+  //   });
+  //   return check;
+  // }
 
   static search(terms: string): Promise<string> {
     var search = new Promise<string>((resolve, reject) => {

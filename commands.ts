@@ -61,6 +61,14 @@ var commands: { [key: string]: command } = {
         }
     },
 
+    'push': {
+        desc: `Pushes the current song to the end of the queue`,
+        exec(message, player, payload) {
+            player.push(player.queue[0])
+            player.skip()
+        }
+    },
+
     'queue': {
         desc: `Prints the current song queue`,
         exec(message, player, payload) {
