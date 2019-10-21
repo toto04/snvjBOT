@@ -44,6 +44,18 @@ class Player extends EventEmitter {
     }
   }
 
+  loop(song: Song){
+    this.push(song)
+    if (!this.dispatcher) {
+      console.error('wtf, how did this happen')
+      return
+    }
+    this.dispatcher.prependOnceListener('end', (reason: string) => {
+      if (reason == 'skipped') return
+      this.loop(song)
+    })
+  }
+
   pause() {
     if (!this.dispatcher) {
       console.log("Nessun brano in riproduzione");

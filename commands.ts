@@ -28,6 +28,16 @@ var commands: { [key: string]: command } = {
         }
     },
 
+    'loop': {
+        desc: `self explanatory really, puts a song in loop`,
+        exec(message, player, payload) {
+            if (payload) player.loop(new Song(payload))
+            else {
+                message.reply('You have to pass a search term or a URL')
+            }
+        }
+    },
+
     'play': {
         desc:
             `Adds a new song to the queue
