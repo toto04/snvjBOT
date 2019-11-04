@@ -3,6 +3,8 @@ import commands from './commands'
 import Player from './player'
 import http from 'http'
 import fs from 'fs'
+import env from 'dotenv'
+env.config()
 
 const client = new discord.Client();
 
