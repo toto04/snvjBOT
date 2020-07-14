@@ -10,7 +10,9 @@ client.on('ready', async () => {
 
 client.on('message', async message => {
     if (message.channel.id != '718834639392997497') return
-    setTimeout(() => message.delete(), 15 * 60 * 1000)
+    setTimeout(() => {
+        if (message.deletable) message.delete()
+    }, 15 * 60 * 1000)
 })
 
 client.login(process.env.TOKEN)
