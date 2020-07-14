@@ -1,26 +1,12 @@
 {
-  "name": "snvjbot",
+  "name": "snvjBOT",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
+  "repository": "https://github.com/toto04/snvjBOT.git",
+  "license": "MIT",
   "dependencies": {
-    "@types/node": "^12.7.8",
-    "discord.js": "^11.5.1",
-    "dotenv": "^8.2.0",
-    "ffmpeg": "0.0.4",
-    "fluent-ffmpeg": "^2.1.2",
-    "node-html-parser": "^1.1.16",
-    "node-opus": "^0.3.2",
-    "typescript": "^3.6.3",
-    "ytdl-core": "^1.0.3"
-  },
-  "devDependencies": {
-    "@types/fluent-ffmpeg": "^2.1.10"
+    "@types/node": "^14.0.23",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
   }
 }
