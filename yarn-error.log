@@ -1,0 +1,36 @@
+Arguments: 
+  /home/toto04/.nvm/versions/node/v12.14.1/bin/node /mnt/c/Users/toto0/AppData/Roaming/npm/node_modules/yarn/bin/yarn.js init
+
+PATH: 
+  /home/toto04/.nvm/versions/node/v12.14.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files (x86)/Razer Chroma SDK/bin:/mnt/c/Program Files/Razer Chroma SDK/bin:/mnt/c/Program Files (x86)/Razer/ChromaBroadcast/bin:/mnt/c/Program Files/Razer/ChromaBroadcast/bin:/mnt/c/Program Files/Oculus/Support/oculus-runtime:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Python27/:/mnt/c/Python27/Scripts:/mnt/c/ProgramData/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/toto0/AppData/Roaming/nvm:/mnt/c/Program Files/nodejs:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/WINDOWS/system32/config/systemprofile/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/toto0/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/toto0/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/toto0/AppData/Roaming/npm:/mnt/c/Users/toto0/AppData/Roaming/nvm:/mnt/c/Program Files/nodejs:/snap/bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.14.1
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/mnt/c/Users/toto0/AppData/Roaming/npm/node_modules/yarn/lib/cli.js:137008:13)
+      at Interface.emit (events.js:223:5)
+      at Interface._ttyWrite (readline.js:885:16)
+      at ReadStream.onkeypress (readline.js:191:10)
+      at ReadStream.emit (events.js:223:5)
+      at emitKeys (internal/readline/utils.js:433:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1151:36)
+      at ReadStream.emit (events.js:223:5)
+      at addChunk (_stream_readable.js:309:12)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
