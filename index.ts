@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
 config()
-import Discord, { TextChannel, Message, Emoji, Guild, GuildEmoji } from 'discord.js'
+import Discord, { TextChannel, Message, Emoji, Guild, GuildEmoji, MessageReaction } from 'discord.js'
 
 const songRequestsChannelID = '718834639392997497'
 const pinnedMessageID = '732406140830351382'
@@ -50,6 +50,17 @@ client.on('ready', async () => {
         let message = await startHere.messages.fetch(entry[1].messageID)
         let emoji = message.guild?.emojis.cache.find(e => e.name == entry[0])!
         message.react(emoji)
+
+        setInterval(async () => {
+            let reactions = await message.awaitReactions((reaction: MessageReaction) => reaction.emoji.name == entry[0], { time: 15000 })
+            let reaction: MessageReaction = reactions.values().next().value
+
+            let users = await reaction.users.fetch()
+            users.filter(u => u.id != client.user?.id).forEach(async user => {
+                let member = await message.guild?.members.fetch(user.id)
+                member?.roles.add(entry[1].roleID)
+            })
+        }, 60 * 1000)
     })
 })
 
