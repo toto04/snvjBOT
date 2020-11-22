@@ -53,13 +53,11 @@ client.on('ready', async () => {
     Object.entries(reactionEmojiDictionary).map(async entry => {
         let message = await startHere.messages.fetch(entry[1].messageID)
         let emoji = message.guild?.emojis.cache.find(e => e.name == entry[0])!
-        message.react(emoji)
-
+        await message.react(emoji)
+        let reaction = message.reactions.cache.first()
+        if (!reaction) throw 'reaction undefined'
         setInterval(async () => {
-            let reactions = await message.awaitReactions((reaction: MessageReaction) => reaction.emoji.name == entry[0], { time: 15000 })
-            let reaction: MessageReaction = reactions.values().next().value
-
-            let users = await reaction.users.fetch()
+            let users = await reaction!.users.fetch()
             users.filter(u => u.id != client.user?.id).forEach(async user => {
                 let member = await message.guild?.members.fetch(user.id)
                 member?.roles.add(entry[1].roleID)
