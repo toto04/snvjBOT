@@ -33,8 +33,12 @@ let reactionEmojiDictionary: {
 
 const client = new Discord.Client();
 
+function log(...args: any[]) {
+    console.log(`[${new Date().toLocaleString()}]`, ...args)
+}
+
 client.on('ready', async () => {
-    console.log('snvjBOT ready to work!')
+    log('snvjBOT ready to work!')
 
     // trashes all the messages except for the instrucions
     let t = await client.channels.fetch(songRequestsChannelID) as TextChannel
@@ -82,7 +86,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     let entry = reactionEmojiDictionary[emoji.name]
     if (!entry) return
 
-    console.log(`User ${user.username} added emoji ${emoji.name}`)
+    log(`User ${user.username} added emoji ${emoji.name}`)
     let member = await emoji.guild.members.fetch(user.id)
     member.roles.add(entry.roleID)
 })
@@ -93,7 +97,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     let entry = reactionEmojiDictionary[emoji.name]
     if (!entry) return
 
-    console.log(`User ${user.username} removed emoji ${emoji.name}`)
+    log(`User ${user.username} removed emoji ${emoji.name}`)
     let member = await emoji.guild.members.fetch(user.id)
     member.roles.remove(entry.roleID)
 })
