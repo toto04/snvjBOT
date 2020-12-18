@@ -50,54 +50,48 @@ client.on('ready', async () => {
 
     // caches the messages which reactions are needed to be watched
     let startHere = await client.channels.fetch(startHereID) as TextChannel
-    Object.entries(reactionEmojiDictionary).map(async entry => {
+    Object.entries(reactionEmojiDictionary).forEach(async entry => {
         let message = await startHere.messages.fetch(entry[1].messageID)
-        let emoji = message.guild?.emojis.cache.find(e => e.name == entry[0])!
+        if (!message.guild) throw 'guild undefined'
+        let guild = message.guild
+
+        let emoji = guild.emojis.cache.find(e => e.name == entry[0])!
         await message.react(emoji)
-        let reaction = message.reactions.cache.first()
-        if (!reaction) throw 'reaction undefined'
-        setInterval(async () => {
-            let users = await reaction!.users.fetch()
-            users.filter(u => u.id != client.user?.id).forEach(async user => {
-                let member = await message.guild?.members.fetch(user.id)
-                member?.roles.add(entry[1].roleID)
-            })
-        }, 60 * 1000)
+
+        let a = message.reactions.cache.first()
+        if (!a) throw 'reaction undefined'
+        let reaction = a
+
+        let cachedUsersIds: string[] = []
+
+        let fetchReactions = async () => {
+            let users = await reaction.users.fetch()
+            users = users.filter(u => u.id != client.user?.id)
+
+            for (const id of cachedUsersIds.filter(id => !users.get(id))) {
+                let member = await guild.members.fetch(id)
+                await member.roles.remove(entry[1].roleID)
+            }
+
+            cachedUsersIds = users.map(u => u.id)
+            for (const id of cachedUsersIds) {
+                let m = await guild.members.fetch(id)
+                if (!m.roles.cache.has(entry[1].roleID)) await m.roles.add(entry[1].roleID)
+            }
+        }
+        setInterval(fetchReactions, 5 * 1000)
     })
 })
 
 client.on('message', async message => {
     if (message.channel.id != songRequestsChannelID) return
     // instantly deletes unrelated messages
-    if (!message.content.startsWith('!') && message.author.id != groovyID && message.deletable)
+    if (!message.content.startsWith('-') && message.author.id != groovyID && message.deletable)
         message.delete()
     else setTimeout(() => {
         // deletes messages after 10 minutes
         if (message.deletable) message.delete()
     }, 15 * 60 * 1000)
-})
-
-client.on('messageReactionAdd', async (reaction, user) => {
-    if (user.id == client.user?.id) return
-    if (reaction.message.channel.id != startHereID) return
-    let emoji = reaction.emoji as GuildEmoji
-    let entry = reactionEmojiDictionary[emoji.name]
-    if (!entry) return
-
-    log(`User ${user.username} added emoji ${emoji.name}`)
-    let member = await emoji.guild.members.fetch(user.id)
-    member.roles.add(entry.roleID)
-})
-
-client.on('messageReactionRemove', async (reaction, user) => {
-    if (reaction.message.channel.id != startHereID) return
-    let emoji = reaction.emoji as GuildEmoji
-    let entry = reactionEmojiDictionary[emoji.name]
-    if (!entry) return
-
-    log(`User ${user.username} removed emoji ${emoji.name}`)
-    let member = await emoji.guild.members.fetch(user.id)
-    member.roles.remove(entry.roleID)
 })
 
 client.login(process.env.TOKEN)
